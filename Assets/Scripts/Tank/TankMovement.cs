@@ -10,8 +10,11 @@ public class TankMovement : MonoBehaviour {
     public float m_PitchRange = 0.2f;           // The amount by which the pitch of the engine noises can vary.
 
 
-    private string m_MovementAxisName;          // The name of the input axis for moving forward and back.
-    private string m_TurnAxisName;              // The name of the input axis for turning.
+    [HideInInspector]
+    public string m_MovementAxisName;          // The name of the input axis for moving forward and back.
+    [HideInInspector]
+    public string m_TurnAxisName;              // The name of the input axis for turning.
+
     private Rigidbody m_Rigidbody;              // Reference used to move the tank.
     private float m_MovementInputValue;         // The current value of the movement input.
     private float m_TurnInputValue;             // The current value of the turn input.
