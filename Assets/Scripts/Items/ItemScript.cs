@@ -136,7 +136,7 @@ public class ItemScript : MonoBehaviour {
 
 
     public void ChooseRandomState() {
-        int stateNumber = Random.Range(0, System.Enum.GetNames(typeof(ItemStates)).Length);
+        int stateNumber = Random.Range(0, System.Enum.GetNames(typeof(ItemStates)).Length - 1);
         itemState = (ItemStates)stateNumber;
         ChooseColor();
     }
