@@ -66,7 +66,7 @@ public class StateController : MonoBehaviour {
             currentState = nextState;
         }
     }
-
+    
     public bool CheckIfCountDownElapsed(float duration)
     {
         stateTimeElapsed += Time.deltaTime;

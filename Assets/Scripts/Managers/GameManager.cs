@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public int m_numberOfLivePlayers = 2;
+    public int m_numberOfPlayers = 4;
     public int m_NumRoundsToWin = 5;            // The number of rounds a single player has to win to win the game.
     public float m_StartDelay = 3f;             // The delay between the start of RoundStarting and RoundPlaying phases.
     public float m_EndDelay = 3f;               // The delay between the end of RoundPlaying and RoundEnding phases.
@@ -15,6 +16,7 @@ public class GameManager : MonoBehaviour
     public GameObject[] m_TankPrefabs;
     public TankManager[] m_Tanks;               // A collection of managers for enabling and disabling different aspects of the tanks.
     public List<Transform> wayPointsForAI;
+    public bool isStart;
 
     private int m_RoundNumber;                  // Which round the game is currently on.
     private WaitForSeconds m_StartWait;         // Used to have a delay whilst the round starts.
@@ -23,16 +25,28 @@ public class GameManager : MonoBehaviour
     private TankManager m_GameWinner;           // Reference to the winner of the game.  Used to make an announcement of who won.  
 
 
+    public void StartGame()
+    {
+        isStart = true;
+        SpawnAllTanks();
+        SetCameraTargets();
+        StartCoroutine(GameLoop());
+    }
+
+    public void Restart()
+    {
+        SceneManager.LoadScene(0);
+    }
+
+
     private void Start()
     {
         m_StartWait = new WaitForSeconds(m_StartDelay);
         m_EndWait = new WaitForSeconds(m_EndDelay);
-
-        SpawnAllTanks();
-        SetCameraTargets();
-
-        StartCoroutine(GameLoop());
+        isStart = false;
     }
+
+
 
 
     private void SpawnAllTanks()
@@ -45,7 +59,7 @@ public class GameManager : MonoBehaviour
             m_Tanks[i].SetupPlayerTank();
         }
 
-        for (int i = m_numberOfLivePlayers; i < m_Tanks.Length; i++)
+        for (int i = m_numberOfLivePlayers; i < m_numberOfPlayers; i++)
         {
             // ... create them, set their player number and references needed for control.
             m_Tanks[i].m_Instance =
@@ -59,7 +73,7 @@ public class GameManager : MonoBehaviour
     private void SetCameraTargets()
     {
         // Create a collection of transforms the same size as the number of tanks.
-        Transform[] targets = new Transform[m_Tanks.Length];
+        Transform[] targets = new Transform[m_numberOfPlayers];
 
         // For each of these transforms...
         for (int i = 0; i < targets.Length; i++)
@@ -89,7 +103,7 @@ public class GameManager : MonoBehaviour
         if (m_GameWinner != null)
         {
             // If there is a game winner, restart the level.
-            SceneManager.LoadScene(0);
+            Restart();
         }
         else
         {
@@ -169,7 +183,7 @@ public class GameManager : MonoBehaviour
         int numTanksLeft = 0;
 
         // Go through all the tanks...
-        for (int i = 0; i < m_Tanks.Length; i++)
+        for (int i = 0; i < m_numberOfPlayers; i++)
         {
             // ... and if they are active, increment the counter.
             if (m_Tanks[i].m_Instance.activeSelf)
@@ -186,7 +200,7 @@ public class GameManager : MonoBehaviour
     private TankManager GetRoundWinner()
     {
         // Go through all the tanks...
-        for (int i = 0; i < m_Tanks.Length; i++)
+        for (int i = 0; i < m_numberOfPlayers; i++)
         {
             // ... and if one of them is active, it is the winner so return it.
             if (m_Tanks[i].m_Instance.activeSelf)
@@ -202,7 +216,7 @@ public class GameManager : MonoBehaviour
     private TankManager GetGameWinner()
     {
         // Go through all the tanks...
-        for (int i = 0; i < m_Tanks.Length; i++)
+        for (int i = 0; i < m_numberOfPlayers; i++)
         {
             // ... and if one of them has enough rounds to win the game, return it.
             if (m_Tanks[i].m_Wins == m_NumRoundsToWin)
@@ -228,7 +242,7 @@ public class GameManager : MonoBehaviour
         message += "\n\n\n\n";
 
         // Go through all the tanks and add each of their scores to the message.
-        for (int i = 0; i < m_Tanks.Length; i++)
+        for (int i = 0; i < m_numberOfPlayers; i++)
         {
             message += m_Tanks[i].m_ColoredPlayerText + ": " + m_Tanks[i].m_Wins + " ПОБЕД\n";
         }
@@ -244,7 +258,7 @@ public class GameManager : MonoBehaviour
     // This function is used to turn all the tanks back on and reset their positions and properties.
     private void ResetAllTanks()
     {
-        for (int i = 0; i < m_Tanks.Length; i++)
+        for (int i = 0; i < m_numberOfPlayers; i++)
         {
             m_Tanks[i].Reset();
         }
@@ -253,7 +267,7 @@ public class GameManager : MonoBehaviour
 
     private void EnableTankControl()
     {
-        for (int i = 0; i < m_Tanks.Length; i++)
+        for (int i = 0; i < m_numberOfPlayers; i++)
         {
             m_Tanks[i].EnableControl();
         }
@@ -262,7 +276,7 @@ public class GameManager : MonoBehaviour
 
     private void DisableTankControl()
     {
-        for (int i = 0; i < m_Tanks.Length; i++)
+        for (int i = 0; i < m_numberOfPlayers; i++)
         {
             m_Tanks[i].DisableControl();
         }
